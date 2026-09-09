@@ -1,0 +1,96 @@
+卷 系统 的文件夹 PATH 列表
+卷序列号为 0009-4972
+G:.
+|   App.vue
+|   main.js
+|   structure.txt
+|   
++---assets
+|       main.css
+|       
++---components
+|       PhoneFrame.vue
+|       
++---router
+|       index.js
+|       
++---services
+|   |   aiChat.js
+|   |   aiConfig.js
+|   |   apiPool.js
+|   |   avatar.js
+|   |   chatMessageDb.js
+|   |   chatSettingsDb.js
+|   |   contextExtractor.js
+|   |   stickerContext.js
+|   |   stickerDb.js
+|   |   
+|   +---Info
+|   |       charDb.js
+|   |       charPrompt.js
+|   |       profileDb.js
+|   |       userPrompt.js
+|   |       
+|   \---Prompt
+|       |   builtinSections.js
+|       |   messageFormat.js
+|       |   PromptBuilder.js
+|       |   promptDb.js
+|       |   
+|       \---presets
+|               e心一叙v3.3.js
+|               
++---stores
+|       char.js
+|       profile.js
+|       
+\---views
+    +---Chat
+    |   |   ChatScreen.vue
+    |   |   
+    |   +---Chatcomponents
+    |   |       ChatFooter.vue
+    |   |       ChatHeader.vue
+    |   |       ChatMessage.vue
+    |   |       ImagePicker.vue
+    |   |       StickerPanel.vue
+    |   |       
+    |   \---ChatSettings
+    |       |   ChatSettings.vue
+    |       |   
+    |       \---ChatSettingsComponents
+    |               AppearanceCard.vue
+    |               MemoryCard.vue
+    |               
+    +---Debug
+    |       PromptDebug.vue
+    |       
+    +---Home
+    |       AppIcon.vue
+    |       DockBar.vue
+    |       HomeScreen.vue
+    |       
+    +---InfoApp
+    |       CharInfo.vue
+    |       InfoApp.vue
+    |       ProfileInfo.vue
+    |       
+    +---Prompt
+    |   |   PromptEdit.vue
+    |   |   PromptHome.vue
+    |   |   
+    |   \---Promptcomponents
+    |           CustomSectionCard.vue
+    |           FixedSectionCard.vue
+    |           PromptParams.vue
+    |           PromptSectionList.vue
+    |           
+    \---Settings
+        |   ApiManager.vue
+        |   ApiPool.vue
+        |   Settings.vue
+        |   
+        \---ApiPoolComponents
+                AddApiModal.vue
+                FunctionCard.vue
+                

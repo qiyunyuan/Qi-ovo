@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #202124;
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+#app {
+  min-height: 100vh;
+}
