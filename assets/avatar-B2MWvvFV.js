@@ -1,0 +1,1 @@
+function e(e){return!!e&&/^(https?:\/\/|\/|data:|blob:)/i.test(e)}function t(t){return t instanceof Blob?{src:URL.createObjectURL(t),emoji:``}:e(t)?{src:t,emoji:``}:typeof t==`string`&&t?{src:``,emoji:t}:{src:``,emoji:``}}export{t as n,e as t};
