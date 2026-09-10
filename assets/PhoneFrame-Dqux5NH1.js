@@ -1,1 +1,0 @@
-import{D as e,h as t,i as n,k as r,v as i}from"./index-DxjrRPRK.js";var a={},o={class:`page`},s={class:`screen`};function c(n,a){return e(),i(`div`,o,[t(`div`,s,[r(n.$slots,`default`,{},void 0,!0)])])}var l=n(a,[[`render`,c],[`__scopeId`,`data-v-99c0c3ed`]]);export{l as t};
