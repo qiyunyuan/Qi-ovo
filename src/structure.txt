@@ -33,6 +33,7 @@ G:.
 |   |       
 |   \---Prompt
 |       |   builtinSections.js
+|       |   macroReplacer.js
 |       |   messageFormat.js
 |       |   PromptBuilder.js
 |       |   promptDb.js

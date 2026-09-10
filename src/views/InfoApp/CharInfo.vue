@@ -6,6 +6,7 @@ import PhoneFrame from '../../components/PhoneFrame.vue'
 
 const router = useRouter()
 const store = useCharStore()
+const BASE_URL = import.meta.env.BASE_URL
 
 const info = ref(null)        // 本地编辑副本，点保存才写回 store
 const savedTip = ref(false)
@@ -20,14 +21,14 @@ const fileInput = ref(null)
 // ── 头像库：自动读取 public/avatar/index.json ──
 const libraryAvatars = ref([])
 const DEFAULT_LIBRARY = [
-  '/avatar/avatar-1.png',
-  '/avatar/avatar-2.png',
-  '/avatar/avatar-3.png',
-  '/avatar/avatar-4.png',
-  '/avatar/avatar-5.png',
-  '/avatar/avatar-6.png',
-  '/avatar/avatar-7.png',
-  '/avatar/avatar-8.png'
+  `${BASE_URL}avatar/avatar-1.png`,
+  `${BASE_URL}avatar/avatar-2.png`,
+  `${BASE_URL}avatar/avatar-3.png`,
+  `${BASE_URL}avatar/avatar-4.png`,
+  `${BASE_URL}avatar/avatar-5.png`,
+  `${BASE_URL}avatar/avatar-6.png`,
+  `${BASE_URL}avatar/avatar-7.png`,
+  `${BASE_URL}avatar/avatar-8.png`
 ]
 
 // 年龄由生日自动计算
@@ -68,13 +69,20 @@ function refreshAvatar() {
 // ── 自动读取头像库清单 ──
 async function loadLibrary() {
   try {
-    const res = await fetch('/avatar/index.json', { cache: 'no-store' })
+    const res = await fetch(`${BASE_URL}avatar/index.json`, { cache: 'no-store' })
     if (res.ok) {
       const list = await res.json()
       const files = Array.isArray(list) ? list : (list.files || [])
       const urls = files
         .filter(f => /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(f))
-        .map(f => (f.startsWith('/') ? f : `/avatar/${f}`))
+        .map(f => {
+          // 如果已经是完整 URL（http/https/data/blob），直接返回
+          if (/^(https?:|data:|blob:)/i.test(f)) return f
+          // 如果以 / 开头，说明是绝对路径，保留
+          if (f.startsWith('/')) return f
+          // 否则拼接 BASE_URL
+          return `${BASE_URL}avatar/${f}`
+        })
       libraryAvatars.value = [...new Set(urls)]
       return
     }

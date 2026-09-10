@@ -55,3 +55,13 @@ G:
 cd vs code
 cd Qi祁韵布丁机
 npm run dev
+
+换一行：
+\n\n
+换行：
+\n
+
+git
+git add .
+git commit -m "描述内容"
+git push
