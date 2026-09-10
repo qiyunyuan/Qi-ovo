@@ -4,11 +4,13 @@
 // 1. 读取启用的预设及其板块配置
 // 2. 对固定动态板块（builtin），调用对应提取器生成实际内容
 // 3. 按照板块的 position 和 depth 规则组装最终消息数组
+// 4. 应用宏替换（{{user}}, {{char}}）
 
 import { generateCharPrompt } from '../Info/charPrompt.js'
 import { generateUserPrompt } from '../Info/userPrompt.js'
 import { buildMessageFormatPrompt } from './messageFormat.js'
 import { buildChatHistory, extractContext } from '../contextExtractor.js'
+import { replaceMacros } from './macroReplacer.js'
 
 /**
  * 构建完整的提示词消息数组
@@ -103,42 +105,53 @@ export function buildPrompt(preset, context = {}) {
 
 /**
  * 解析板块内容：固定板块调用提取器，自定义板块直接返回 prompt
+ * ⚠️ 所有内容都会经过宏替换处理（{{user}} → 实际用户名，{{char}} → 实际角色名）
  * 
  * @param {Object} section - 板块对象
  * @param {Object} context - 上下文数据
- * @returns {string} 板块的实际内容
+ * @returns {string} 板块的实际内容（已完成宏替换）
  */
 function resolveSectionContent(section, context) {
+  let content = ''
+
   // 自定义板块：直接返回 prompt
   if (!section.builtin) {
-    return section.prompt || ''
-  }
+    content = section.prompt || ''
+  } else {
+    // 固定动态板块：根据 builtinType 调用对应提取器
+    switch (section.builtinType) {
+      case 'char':
+        content = generateCharPrompt(context.charInfo)
+        break
 
-  // 固定动态板块：根据 builtinType 调用对应提取器
-  switch (section.builtinType) {
-    case 'char':
-      return generateCharPrompt(context.charInfo)
+      case 'user':
+        content = generateUserPrompt(context.userInfo)
+        break
 
-    case 'user':
-      return generateUserPrompt(context.userInfo)
+      case 'messageFormat':
+        content = buildMessageFormatPrompt()
+        break
 
-    case 'messageFormat':
-      return buildMessageFormatPrompt()
+      case 'chatHistory': {
+        const { messages, maxRounds, now, charInfo, userInfo } = context
+        const charName = charInfo?.name || 'char'
+        const userName = userInfo?.name || 'user'
+        
+        // 👇 先截取最近的 maxRounds 回合，再进行格式化拼接
+        const recentMessages = extractContext(messages, maxRounds)
+        content = buildChatHistory(recentMessages, charName, userName, now)
+        break
+      }
 
-    case 'chatHistory': {
-      const { messages, maxRounds, now, charInfo, userInfo } = context
-      const charName = charInfo?.name || 'char'
-      const userName = userInfo?.name || 'user'
-      
-      // 👇 先截取最近的 maxRounds 回合，再进行格式化拼接
-      const recentMessages = extractContext(messages, maxRounds)
-      return buildChatHistory(recentMessages, charName, userName, now)
+      default:
+        console.warn(`Unknown builtinType: ${section.builtinType}`)
+        content = ''
     }
-
-    default:
-      console.warn(`Unknown builtinType: ${section.builtinType}`)
-      return ''
   }
+
+  // ── 应用宏替换 ──
+  // 无论是自定义板块还是固定板块，都会替换 {{user}} 和 {{char}}
+  return replaceMacros(content, context)
 }
 
 /**

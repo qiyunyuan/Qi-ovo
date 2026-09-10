@@ -100,8 +100,8 @@ onMounted(() => {
     <div class="debug-container">
       <!-- 顶部导航栏 -->
       <div class="header">
-        <h1 class="title">提示词调试</h1>
         <button class="close-btn" @click="goHome">✖</button>
+        <h1 class="title">提示词调试</h1>
       </div>
 
       <!-- 内容区 -->
@@ -150,8 +150,8 @@ onMounted(() => {
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 15px 20px;
   border-bottom: 1px solid #eee;
 }
