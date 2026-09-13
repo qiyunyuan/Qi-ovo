@@ -63,5 +63,5 @@ npm run dev
 
 git
 git add .
-git commit -m "描述内容"
+git commit -m "修复了头像选择路径"
 git push

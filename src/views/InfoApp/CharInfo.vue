@@ -20,16 +20,7 @@ const fileInput = ref(null)
 
 // ── 头像库：自动读取 public/avatar/index.json ──
 const libraryAvatars = ref([])
-const DEFAULT_LIBRARY = [
-  `${BASE_URL}avatar/avatar-1.png`,
-  `${BASE_URL}avatar/avatar-2.png`,
-  `${BASE_URL}avatar/avatar-3.png`,
-  `${BASE_URL}avatar/avatar-4.png`,
-  `${BASE_URL}avatar/avatar-5.png`,
-  `${BASE_URL}avatar/avatar-6.png`,
-  `${BASE_URL}avatar/avatar-7.png`,
-  `${BASE_URL}avatar/avatar-8.png`
-]
+
 
 // 年龄由生日自动计算
 const age = computed(() => {
@@ -69,27 +60,37 @@ function refreshAvatar() {
 // ── 自动读取头像库清单 ──
 async function loadLibrary() {
   try {
-    const res = await fetch(`${BASE_URL}avatar/index.json`, { cache: 'no-store' })
-    if (res.ok) {
-      const list = await res.json()
-      const files = Array.isArray(list) ? list : (list.files || [])
-      const urls = files
-        .filter(f => /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(f))
-        .map(f => {
-          // 如果已经是完整 URL（http/https/data/blob），直接返回
-          if (/^(https?:|data:|blob:)/i.test(f)) return f
-          // 如果以 / 开头，说明是绝对路径，保留
-          if (f.startsWith('/')) return f
-          // 否则拼接 BASE_URL
-          return `${BASE_URL}avatar/${f}`
-        })
-      libraryAvatars.value = [...new Set(urls)]
+    const res = await fetch(`${BASE_URL}avatar/index.json`, {
+      cache: 'no-store'
+    })
+
+    if (!res.ok) {
+      libraryAvatars.value = []
       return
     }
+
+    const list = await res.json()
+    const files = Array.isArray(list)
+      ? list
+      : Array.isArray(list.files)
+        ? list.files
+        : []
+
+    const urls = files
+      .filter(f =>
+        typeof f === 'string' &&
+        /\.(png|jpe?g|gif|webp|svg|bmp)$/i.test(f)
+      )
+      .map(f => {
+        if (/^(https?:|data:|blob:)/i.test(f)) return f
+        if (f.startsWith('/')) return f
+        return `${BASE_URL}avatar/${f}`
+      })
+
+    libraryAvatars.value = [...new Set(urls)]
   } catch (e) {
-    /* 清单不存在时走兜底 */
+    libraryAvatars.value = []
   }
-  libraryAvatars.value = [...DEFAULT_LIBRARY]
 }
 
 onMounted(async () => {
