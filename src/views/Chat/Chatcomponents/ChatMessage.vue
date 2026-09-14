@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { getStickerById, getStickerImageUrl } from '../../../services/stickerDb'
 import { isImageSrc } from '../../../services/avatar'
 
-const emit = defineEmits(['media-loaded'])
+const emit = defineEmits(['media-loaded', 'long-press'])
 
 const props = defineProps({
   message: {
@@ -18,7 +18,7 @@ const props = defineProps({
     type: String,
     default: ''
   },
-    showBubbleTime: {
+  showBubbleTime: {
     type: Boolean,
     default: true
   }
@@ -26,7 +26,6 @@ const props = defineProps({
 
 const isUserMessage = computed(() => props.message.role === 'user')
 const messageSide = computed(() => isUserMessage.value ? 'right' : 'left')
-// 用户消息 → 资料APP里的用户头像；AI 消息 → 角色头像
 const avatar = computed(() => isUserMessage.value ? props.userAvatar : props.charAvatar)
 
 const textContent = computed(() => {
@@ -81,6 +80,47 @@ onBeforeUnmount(() => {
   }
 })
 
+// 长按事件处理
+let longPressTimer = null
+const isLongPressing = ref(false)
+
+function handleTouchStart(e) {
+  // 防止滚动时误触发
+  isLongPressing.value = false
+  
+  longPressTimer = setTimeout(() => {
+    isLongPressing.value = true
+    emit('long-press', props.message)
+    
+    // 触发震动反馈（如果设备支持）
+    if (navigator.vibrate) {
+      navigator.vibrate(50)
+    }
+  }, 500) // 长按 500ms 触发
+}
+
+function handleTouchEnd() {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer)
+    longPressTimer = null
+  }
+  isLongPressing.value = false
+}
+
+function handleTouchMove() {
+  // 滑动时取消长按
+  if (longPressTimer) {
+    clearTimeout(longPressTimer)
+    longPressTimer = null
+  }
+  isLongPressing.value = false
+}
+
+onBeforeUnmount(() => {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer)
+  }
+})
 </script>
 
 <template>
@@ -90,43 +130,50 @@ onBeforeUnmount(() => {
       <div v-else class="avatar-placeholder"></div>
     </div>
 
-<div class="message-content">
-  <div class="bubble">
-    <template v-if="message.type === 'text'">
-      {{ textContent }}
-    </template>
+    <div class="message-content">
+      <div 
+        class="bubble" 
+        :class="{ 'long-pressing': isLongPressing }"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
+        @touchmove="handleTouchMove"
+        @contextmenu.prevent="emit('long-press', message)"
+      >
+        <template v-if="message.type === 'text'">
+          {{ textContent }}
+        </template>
 
-    <template v-else-if="message.type === 'image'">
-      <img
-        class="message-image"
-        :src="message.payload.url"
-        :alt="message.payload.alt || '图片'"
-        @load="emit('media-loaded')"
-      />
-    </template>
+        <template v-else-if="message.type === 'image'">
+          <img
+            class="message-image"
+            :src="message.payload.url"
+            :alt="message.payload.alt || '图片'"
+            @load="emit('media-loaded')"
+          />
+        </template>
 
-    <template v-else-if="message.type === 'sticker'">
-      <img
-        v-if="stickerUrl"
-        class="sticker-image"
-        :src="stickerUrl"
-        :alt="stickerAlt"
-        @load="emit('media-loaded')"
-      />
-    </template>
+        <template v-else-if="message.type === 'sticker'">
+          <img
+            v-if="stickerUrl"
+            class="sticker-image"
+            :src="stickerUrl"
+            :alt="stickerAlt"
+            @load="emit('media-loaded')"
+          />
+        </template>
 
-    <template v-else>
-      不支持的消息类型
-    </template>
-  </div>
+        <template v-else>
+          不支持的消息类型
+        </template>
+      </div>
 
-  <div
-    v-if="showBubbleTime && bubbleTime"
-    class="bubble-time"
-  >
-    {{ bubbleTime }}
-  </div>
-</div>
+      <div
+        v-if="showBubbleTime && bubbleTime"
+        class="bubble-time"
+      >
+        {{ bubbleTime }}
+      </div>
+    </div>
 
     <div class="avatar" v-if="isUserMessage">
       <img v-if="isImageSrc(avatar)" :src="avatar" class="avatar-img" alt="" />
@@ -177,7 +224,17 @@ onBeforeUnmount(() => {
   overflow-wrap: anywhere;
   word-break: break-word;
   min-width: 0;
+  
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.1s ease, opacity 0.1s ease;
 }
+
+.message-row .bubble.long-pressing {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
 .message-row.left .bubble {
   background-color: #ffffff;
   color: #333;
@@ -214,7 +271,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #f0f0f0; /* 浅灰占位，如果要透明就写 transparent */
+  background-color: #f0f0f0;
 }
 
 .message-content {
@@ -232,7 +289,6 @@ onBeforeUnmount(() => {
   align-items: flex-end;
 }
 
-/* 原 bubble 的 max-width 改由 message-content 控制 */
 .message-row .bubble {
   max-width: 100%;
 }
@@ -244,5 +300,4 @@ onBeforeUnmount(() => {
   font-size: 11px;
   line-height: 1.2;
 }
-
 </style>

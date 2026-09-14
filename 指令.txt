@@ -1,4 +1,4 @@
-我是用Vue3 (script setup、IndexedDB储存)在vs code写代码。现在是开发阶段，没有旧数据。需要其他文件可以告诉我。
+我是用Vue3 (script setup、IndexedDB储存)在vs code写代码。现在是开发阶段，没有旧数据。我需要发什么文件给你。
 
                 <!-- 抽屉区域 -->
                 <div class="chat-drawer" id="chat-drawer">
