@@ -54,6 +54,7 @@ G:.
     |   |       ChatHeader.vue
     |   |       ChatMessage.vue
     |   |       ImagePicker.vue
+    |   |       MessageActionModal.vue
     |   |       StickerPanel.vue
     |   |       
     |   \---ChatSettings

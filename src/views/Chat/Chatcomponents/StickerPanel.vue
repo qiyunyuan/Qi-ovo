@@ -10,7 +10,7 @@ import {
   getStickerImageUrl,
   saveStickerCategories,
   updateSticker
-} from '../../../services/stickerDb'
+} from '../../../services/Chat/stickerDb'
 
 const emit = defineEmits(['send-sticker'])
 const props = defineProps({

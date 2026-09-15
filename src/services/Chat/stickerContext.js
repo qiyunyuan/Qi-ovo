@@ -1,5 +1,5 @@
 // src/services/stickerContext.js
-import { getStickerById } from './stickerDb'
+import { getStickerById } from './Chat/stickerDb'
 
 export async function stickerMessageToAiContext(message) {
   const stickerId = message.payload?.stickerId

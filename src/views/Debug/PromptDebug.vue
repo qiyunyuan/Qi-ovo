@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import PhoneFrame from '../../components/PhoneFrame.vue'
 import { previewPrompt } from '../../services/aiChat'
 import { debugPrompt } from '../../services/Prompt/PromptBuilder'
-import { getChatMessages } from '../../services/chatMessageDb'
+import { getChatMessages } from '../../services/Chat/chatMessageDb.js'
 import { useProfileStore } from '../../stores/profile'
 
 const router = useRouter()

@@ -9,9 +9,9 @@ import MessageActionModal from './Chatcomponents/MessageActionModal.vue'
 import { useCharStore } from '../../stores/char'
 import { useProfileStore } from '../../stores/profile'
 import { resolveAvatarValue } from '../../services/avatar'
-import { getChatSettings } from '../../services/chatSettingsDb'
+import { getChatSettings } from '../../services/Chat/chatSettingsDb.js'
 import { generateAiReply } from '../../services/aiChat'
-import { getChatMessages, saveChatMessage, deleteChatMessage } from '../../services/chatMessageDb'
+import { getChatMessages, saveChatMessage, deleteChatMessage } from '../../services/Chat/chatMessageDb.js'
 
 const route = useRoute()
 

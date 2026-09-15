@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getChatSettings, saveChatSettings } from '@/services/chatSettingsDb'
+import { getChatSettings, saveChatSettings } from '@/services/Chat/chatSettingsDb'
 
 const props = defineProps({
   uid: {

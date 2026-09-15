@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { getStickerById, getStickerImageUrl } from '../../../services/stickerDb'
+import { getStickerById, getStickerImageUrl } from '../../../services/Chat/stickerDb'
 import { isImageSrc } from '../../../services/avatar'
 
 const emit = defineEmits(['media-loaded', 'long-press'])
