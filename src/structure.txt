@@ -15,16 +15,18 @@ G:.
 |       index.js
 |       
 +---services
-|   |   aiChat.js
 |   |   aiConfig.js
 |   |   apiPool.js
 |   |   avatar.js
-|   |   chatMessageDb.js
-|   |   chatSettingsDb.js
 |   |   contextExtractor.js
-|   |   stickerContext.js
-|   |   stickerDb.js
 |   |   
+|   +---Chat
+|   |       aiChat.js
+|   |       chatMessageDb.js
+|   |       chatSettingsDb.js
+|   |       stickerContext.js
+|   |       stickerDb.js
+|   |       
 |   +---Info
 |   |       charDb.js
 |   |       charPrompt.js

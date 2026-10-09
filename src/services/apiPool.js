@@ -214,6 +214,37 @@ class ApiPoolManager {
     }
     return report
   }
+
+    /**
+   * 获取指定 API 的健康状态
+   * @param {number} apiConfigId
+   * @returns {Object} { status: 'healthy' | 'warning' | 'disabled', failures: number, lastFailTime: number|null }
+   */
+  getApiStatus(apiConfigId) {
+    const health = this.apiHealthStatus.get(apiConfigId)
+    
+    if (!health) {
+      return {
+        status: 'healthy',
+        failures: 0,
+        lastFailTime: null,
+        recoveryTimeLeft: 0
+      }
+    }
+
+    const now = Date.now()
+    const recoveryTimeLeft = health.isDisabled 
+      ? Math.max(0, this.recoveryTime - (now - health.lastFailTime))
+      : 0
+
+    return {
+      status: health.isDisabled ? 'disabled' : (health.failures > 0 ? 'warning' : 'healthy'),
+      failures: health.failures,
+      lastFailTime: health.lastFailTime,
+      recoveryTimeLeft
+    }
+  }
+
 }
 
 // 创建单例
@@ -328,4 +359,12 @@ export function resetPoolHealth() {
  */
 export function getPoolHealthReport() {
   return poolManager.getHealthReport()
+}
+
+/**
+ * 获取指定 API 的状态
+ * @param {number} apiConfigId
+ */
+export function getApiStatus(apiConfigId) {
+  return poolManager.getApiStatus(apiConfigId)
 }

@@ -1,16 +1,52 @@
 <!-- src/views/Settings/ApiPoolComponents/FunctionCard.vue -->
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   title:   { type: String, required: true },
   icon:    { type: String, default: '⚙️' },
-  entries: { type: Array,  default: () => [] }  // [{ apiName, model }]
+  entries: { type: Array,  default: () => [] },  // [{ apiConfigId, apiName, model }]
+  statusMap: { type: Map, default: () => new Map() }
 })
 
 const emit = defineEmits(['add', 'remove'])
 
 const expanded = ref(false)
+
+// 获取指定 API 的状态
+function getStatus(apiConfigId) {
+  return props.statusMap.get(apiConfigId) || {
+    status: 'healthy',
+    failures: 0,
+    lastFailTime: null,
+    recoveryTimeLeft: 0
+  }
+}
+
+// 获取状态徽章信息
+function getStatusBadge(apiConfigId) {
+  const status = getStatus(apiConfigId)
+  
+  if (status.status === 'healthy') {
+    return { text: '✓ 正常', color: '#10b981' }
+  } else if (status.status === 'disabled') {
+    const secondsLeft = Math.ceil(status.recoveryTimeLeft / 1000)
+    return { text: `⏳ 恢复中 ${secondsLeft}s`, color: '#f59e0b' }
+  } else {
+    return { text: `⚠ 失败 ${status.failures}x`, color: '#ef4444' }
+  }
+}
+
+// 获取状态颜色类
+function getStatusClass(apiConfigId) {
+  const status = getStatus(apiConfigId)
+  switch (status.status) {
+    case 'healthy': return 'status-healthy'
+    case 'warning': return 'status-warning'
+    case 'disabled': return 'status-disabled'
+    default: return 'status-healthy'
+  }
+}
 </script>
 
 <template>
@@ -55,19 +91,27 @@ const expanded = ref(false)
             v-for="(entry, idx) in entries"
             :key="idx"
             class="entry-row"
+            :class="getStatusClass(entry.apiConfigId)"
           >
             <div class="entry-info">
               <span class="entry-api-name">{{ entry.apiName }}</span>
               <span class="entry-sep">·</span>
               <span class="entry-model">{{ entry.model }}</span>
             </div>
-            <button class="remove-btn" @click="$emit('remove', idx)" title="移除">
-              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor"
-                   stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
+            <div class="entry-right">
+              <!-- 状态徽章 -->
+              <span class="status-badge" :style="{ color: getStatusBadge(entry.apiConfigId).color }">
+                {{ getStatusBadge(entry.apiConfigId).text }}
+              </span>
+              <!-- 移除按钮 -->
+              <button class="remove-btn" @click="$emit('remove', idx)" title="移除">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor"
+                     stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -190,6 +234,24 @@ const expanded = ref(false)
   border: 1.5px solid #ffe5e5;
   border-radius: 14px;
   padding: 10px 14px;
+  transition: all 0.3s ease;
+}
+
+/* ── 状态变量样式 ───────────────────────── */
+.entry-row.status-healthy {
+  border-color: #d1fae5;
+  background: #f0fdf4;
+}
+
+.entry-row.status-warning {
+  border-color: #fed7aa;
+  background: #fffbf0;
+}
+
+.entry-row.status-disabled {
+  border-color: #fecaca;
+  background: #fef2f2;
+  opacity: 0.8;
 }
 
 .entry-info {
@@ -223,6 +285,24 @@ const expanded = ref(false)
   text-overflow: ellipsis;
 }
 
+/* ── 右侧容器 ─────────────────────────────── */
+.entry-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── 状态徽章 ─────────────────────────────── */
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: bold;
+  white-space: nowrap;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
 /* ── 移除按钮 ─────────────────────────────── */
 .remove-btn {
   background: none;
@@ -234,7 +314,6 @@ const expanded = ref(false)
   align-items: center;
   border-radius: 8px;
   flex-shrink: 0;
-  margin-left: 8px;
   transition: color 0.2s, transform 0.2s;
 }
 
