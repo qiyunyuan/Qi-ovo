@@ -3,7 +3,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import PhoneFrame from '../../components/PhoneFrame.vue'
-import { previewPrompt } from '../../services/aiChat'
+import { previewPrompt } from '../../services/Chat/aiChat'
 import { debugPrompt } from '../../services/Prompt/PromptBuilder'
 import { getChatMessages } from '../../services/Chat/chatMessageDb.js'
 import { useProfileStore } from '../../stores/profile'

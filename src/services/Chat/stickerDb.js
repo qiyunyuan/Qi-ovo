@@ -1,4 +1,4 @@
-// src/services/stickerDb.js
+// src/services/Chat/stickerDb.js
 import Dexie from 'dexie'
 
 export const stickerDb = new Dexie('qi_yunovo_sticker_db')

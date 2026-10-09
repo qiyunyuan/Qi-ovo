@@ -1,9 +1,9 @@
-// src/services/aiChat.js
-import { callWithPool } from './apiPool.js'
-import { buildPrompt, getPresetParams } from './Prompt/PromptBuilder.js'
-import { getPresets } from './Prompt/promptDb.js'
-import { useCharStore } from '../stores/char.js'
-import { useProfileStore } from '../stores/profile.js'
+// src/services/Chat/Chat.js
+import { callWithPool } from '../apiPool.js'
+import { buildPrompt, getPresetParams } from '../Prompt/PromptBuilder.js'
+import { getPresets } from '../Prompt/promptDb.js'
+import { useCharStore } from '../../stores/char.js'
+import { useProfileStore } from '../../stores/profile.js'
 
 /**
  * 发送 OpenAI 兼容的聊天请求（非流式）

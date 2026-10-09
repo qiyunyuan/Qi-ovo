@@ -1,4 +1,4 @@
-// src/services/stickerContext.js
+// src/services/Chat/stickerContext.js
 import { getStickerById } from './Chat/stickerDb'
 
 export async function stickerMessageToAiContext(message) {

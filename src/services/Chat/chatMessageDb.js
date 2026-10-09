@@ -1,4 +1,4 @@
-// src/services/chatMessageDb.js
+// src/services/Chat/chatMessageDb.js
 import Dexie from 'dexie'
 
 export const chatMessageDb = new Dexie('qi_yunovo_chat_message_db')
